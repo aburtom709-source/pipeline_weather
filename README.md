@@ -63,3 +63,23 @@ pip install -r requirements.txt
 ```bash
 python src/main.py
 ```
+## 🌪️ Orquestación con Airflow
+
+El pipeline también puede correr automáticamente cada hora usando Apache Airflow, 
+en vez de ejecutarlo a mano con `python src/main.py`.
+
+El DAG (`dags/dag_clima.py`) no reescribe la lógica: solo importa y encadena las 
+funciones `extract()`, `transform()` y `load()` ya existentes en `src/`.
+
+## 🚀 Cómo correrlo
+```bash
+export AIRFLOW_HOME=~/airflow
+airflow db migrate
+cp dags/dag_clima.py ~/airflow/dags/
+airflow scheduler
+airflow dag-processor
+airflow api-server --port 8080
+```
+
+Con Postgres levantado (`docker compose up -d`), entrá a `http://localhost:8080`, 
+buscá `dag_clima` y activá el toggle para que corra según el schedule (`@hourly`).
